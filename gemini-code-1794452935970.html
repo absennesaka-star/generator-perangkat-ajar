@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Perangkat Ajar - Kurikulum Merdeka</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8F7F4; } 
+    </style>
+</head>
+<body class="text-zinc-800 antialiased py-8 px-4 flex justify-center">
+
+    <div class="w-full max-w-md bg-[#F4F1EA] rounded-3xl p-6 shadow-sm border border-zinc-200">
+        
+        <!-- Header -->
+        <div class="mb-6">
+            <span class="inline-block bg-[#E3E8E1] text-[#2C4A3E] text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                RUANG KERJA GURU SMP (MURNI GITHUB)
+            </span>
+            <h1 class="text-2xl font-bold tracking-tight text-zinc-900 leading-snug">
+                Generator Perangkat Ajar AI
+            </h1>
+            <p class="text-xs text-zinc-600 mt-2 leading-relaxed">
+                Buat ATP, Modul Ajar, Prota, Promes, atau LKPD secara instan menggunakan Gemini AI langsung dari browser.
+            </p>
+        </div>
+
+        <!-- Form Input -->
+        <div class="bg-white rounded-2xl p-5 shadow-xs border border-zinc-200 space-y-4">
+            
+            <!-- Input API Key (Opsional/Disimpan di Browser) -->
+            <div>
+                <label class="block text-xs font-medium text-zinc-700 mb-1">Gemini API Key</label>
+                <input type="password" id="apiKey" placeholder="Tempel API Key Anda di sini" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#2C4A3E]/20">
+                <span class="text-[10px] text-zinc-400 mt-0.5 block">Kunci aman tersimpan di sesi browser Anda sendiri.</span>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-zinc-700 mb-1">Jenis Dokumen</label>
+                <select id="jenisDokumen" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+                    <option value="Alur Tujuan Pembelajaran (ATP)">Alur Tujuan Pembelajaran (ATP)</option>
+                    <option value="Modul Ajar / RPP">Modul Ajar / RPP</option>
+                    <option value="Program Tahunan (Prota)">Program Tahunan (Prota)</option>
+                    <option value="Program Semester (Promes)">Program Semester (Promes)</option>
+                    <option value="Lembar Kerja Peserta Didik (LKPD)">Lembar Kerja Peserta Didik (LKPD)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-zinc-700 mb-1">Mata Pelajaran</label>
+                <select id="mapel" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+                    <option value="Informatika">Informatika</option>
+                    <option value="Matematika">Matematika</option>
+                    <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                    <option value="IPA">IPA</option>
+                    <option value="IPS">IPS</option>
+                    <option value="Bahasa Inggris">Bahasa Inggris</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-700 mb-1">Kelas</label>
+                    <select id="kelas" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+                        <option value="VII">VII</option>
+                        <option value="VIII" selected>VIII</option>
+                        <option value="IX">IX</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-700 mb-1">Semester</label>
+                    <select id="semester" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+                        <option value="1 (Ganjil)">1 (Ganjil)</option>
+                        <option value="2 (Genap)">2 (Genap)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-zinc-700 mb-1">Topik atau Materi</label>
+                <input type="text" id="topik" placeholder="Contoh: Berpikir Komputasional" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-xs font-medium text-zinc-700 mb-1">Alokasi Waktu (JP)</label>
+                <input type="number" id="alokasiWaktu" value="8" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2 text-sm">
+            </div>
+
+            <button onclick="handleGenerate()" id="btnSubmit" class="w-full bg-[#1B362D] hover:bg-[#12241E] text-white font-medium py-3 rounded-xl text-sm transition shadow-sm cursor-pointer">
+                Buat draf dokumen
+            </button>
+        </div>
+
+        <!-- Hasil Draf Section -->
+        <div id="hasilSection" class="mt-5 bg-white rounded-2xl p-5 shadow-xs border border-zinc-200 hidden">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-zinc-900 text-sm">Hasil Draf AI</h3>
+                <button onclick="salinTeks()" class="text-xs bg-zinc-100 hover:bg-zinc-200 px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">Salin Teks</button>
+            </div>
+            <div id="loading" class="text-center py-4 text-xs text-zinc-500 animate-pulse">Sedang merancang dokumen secara cepat...</div>
+            <div id="drafContent" class="text-xs text-zinc-700 whitespace-pre-wrap bg-zinc-50 p-3 rounded-xl max-h-60 overflow-y-auto border border-zinc-100 leading-relaxed"></div>
+        </div>
+
+        <p class="text-[11px] text-zinc-500 text-center mt-5 leading-normal">
+            Draf dihasilkan langsung di browser Anda via Gemini API.
+        </p>
+    </div>
+
+    <script>
+        // Memuat API Key yang tersimpan sebelumnya di browser (jika ada)
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('gemini_api_key');
+            if (savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+            }
+        });
+
+        async function handleGenerate() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const jenisDokumen = document.getElementById('jenisDokumen').value;
+            const mapel = document.getElementById('mapel').value;
+            const kelas = document.getElementById('kelas').value;
+            const semester = document.getElementById('semester').value;
+            const topik = document.getElementById('topik').value.trim();
+            const alokasiWaktu = document.getElementById('alokasiWaktu').value;
+
+            if (!apiKey) {
+                alert('Mohon masukkan Gemini API Key terlebih dahulu!');
+                return;
+            }
+            if (!topik) {
+                alert('Mohon isi topik atau materi pembelajaran!');
+                return;
+            }
+
+            // Simpan API key ke localStorage agar tidak perlu ngetik ulang terus
+            localStorage.setItem('gemini_api_key', apiKey);
+
+            const btn = document.getElementById('btnSubmit');
+            const hasilSection = document.getElementById('hasilSection');
+            const loading = document.getElementById('loading');
+            const drafContent = document.getElementById('drafContent');
+
+            btn.disabled = true;
+            btn.innerText = "Memproses Cepat...";
+            hasilSection.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            drafContent.innerText = "";
+
+            const prompt = `Bertindaklah sebagai Ahli Kurikulum dan Guru profesional. Buatkan draf dokumen administrasi pendidikan "${jenisDokumen}" untuk Mata Pelajaran ${mapel}, Kelas ${kelas} Semester ${semester}, dengan topik: "${topik}". Alokasi waktu ${alokasiWaktu} JP. Buat dengan format Kurikulum Merdeka yang rapi, terstruktur menggunakan sub-judul yang jelas, dan siap pakai.`;
+
+            // Menggunakan endpoint model gemini-1.5-flash langsung dari browser
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                loading.classList.add('hidden');
+                btn.disabled = false;
+                btn.innerText = "Buat draf dokumen";
+
+                if (response.ok && result.candidates && result.candidates.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    drafContent.innerText = text;
+                } else {
+                    const errMsg = result.error ? result.error.message : 'Terjadi kesalahan pada sistem API.';
+                    drafContent.innerText = "Gagal: " + errMsg;
+                }
+
+            } catch (error) {
+                loading.classList.add('hidden');
+                btn.disabled = false;
+                btn.innerText = "Buat draf dokumen";
+                drafContent.innerText = "Kesalahan Jaringan: " + error.message;
+            }
+        }
+
+        function salinTeks() {
+            const text = document.getElementById('drafContent').innerText;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Teks draf berhasil disalin ke clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
